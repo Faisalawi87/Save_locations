@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "909705467663",
+    "project_id": "my-location-by-flutter",
+    "storage_bucket": "my-location-by-flutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:909705467663:android:1ba2c11d756f47dbf1d07a",
+        "android_client_info": {
+          "package_name": "faisalawi.my_location"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "909705467663-79taqrlkoln6g46rm1278gejjk74atsn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuaTzKsPUSVF7XiHRF7mXzui4ZcNCdytg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "909705467663-79taqrlkoln6g46rm1278gejjk74atsn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
