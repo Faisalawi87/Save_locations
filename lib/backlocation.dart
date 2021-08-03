@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart' as geoCo;
@@ -8,7 +9,6 @@ import 'dart:ui';
 class BackLocation extends StatefulWidget {
 
   static const String id = "BLOCATION";
-  //final UserCredential user;
   const BackLocation({Key? key, user}) : super(key: key);
 
   @override
@@ -17,9 +17,12 @@ class BackLocation extends StatefulWidget {
 
 class _BackLocationState extends State<BackLocation> {
   late GoogleMapController _controller;
+   Position? position;
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
 
   void initMarker(specify,specifyId) async{
+    final String currentUser= FirebaseAuth.instance.currentUser!.uid.toString();
+    if (currentUser == specify['from'])  {
     var markerIdval = specifyId;
     final MarkerId markerId = MarkerId(markerIdval);
     final Marker marker = Marker(
@@ -30,28 +33,31 @@ class _BackLocationState extends State<BackLocation> {
     setState(() {
       markers[markerId]=marker;
     });
-  }
+  }}
   getMarkerData(){
     FirebaseFirestore.instance.collection('location').get().then((myDoc) {
 
-      if (myDoc.docs.isNotEmpty){
-        for(int i=0 ; i< myDoc.docs.length ;i++){
+      if (myDoc.docs.isNotEmpty) {
+          for(int i=0 ; i< myDoc.docs.length;i++){
           initMarker(myDoc.docs[i].data(), myDoc.docs[i].id);
         }
       }
     });
   }
+  void getCurrentLocation() async{
+    Position currentPosition = await GeolocatorPlatform.instance.getCurrentPosition();
+    setState(() {
+      position =currentPosition;
+    });
+  }
 
-  //late Position position;
-
-  //late Widget _child;
-
-
-  //BitmapDescriptor pinLocationIcon;
 
   @override
       void  initState(){
     getMarkerData();
+    position = new Position(longitude: 26.292506, latitude: 50.216519, timestamp: null, speedAccuracy: 0, heading: 0.00, speed: 0, altitude:0.0, accuracy: 0.0 , );
+
+    getCurrentLocation();
       super.initState();
   }
 
@@ -79,8 +85,8 @@ class _BackLocationState extends State<BackLocation> {
 
       body: GoogleMap(
             initialCameraPosition: CameraPosition(
-              target: LatLng(26.292518, 50.216461),
-              zoom: 10,
+                target: LatLng(position!.latitude.toDouble(),position!.longitude.toDouble()),
+              //zoom: 10,
             ),
             onMapCreated: (GoogleMapController controller) {
               _controller = controller;

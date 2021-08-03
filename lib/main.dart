@@ -2,7 +2,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:my_location/login.dart';
 import 'package:my_location/register.dart';
+import 'package:provider/provider.dart';
+import 'package:sign_button/constants.dart';
+import 'package:sign_button/create_button.dart';
 import 'dart:ui';
+import 'googleSign.dart';
+import 'home_google.dart';
+import 'mapx.dart';
 
 void main()
   async {
@@ -13,31 +19,47 @@ void main()
 }
 
 class MyApp extends StatelessWidget {
+
+
+
   // This widget is the root of your application.
+
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner:false,
+  Widget build(BuildContext context) => ChangeNotifierProvider(
+    create: (context)=>   GoogleSingInProvider(),
+    child:
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Locations Saver',
       theme: ThemeData(),
       initialRoute: MyHomePage.id,
       routes: {
-        MyHomePage.id : (context)=> MyHomePage(),
+        MyHomePage.id: (context) => MyHomePage(),
         Registration.id: (context) => Registration(),
-        Login.id:(context)=> Login(),
-        //backlocation.id:(context)=> backlocation(),
-        //Locationp.id : (context)=> Locationp(user: user),
+        Login.id: (context) => Login(),
+        MapLocation.id:(context)=> MapLocation(),
+        HomeGoogle.id:(context)=> HomeGoogle(),
 
       },
-    );
+
+    )
+  );
   }
-}
+
+
+
+
 
 class MyHomePage extends StatelessWidget {
   static const String id = "HOMESCREEN";
+
+  get gUser => GoogleSingInProvider();
+
+
+
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -70,7 +92,9 @@ class MyHomePage extends StatelessWidget {
           ),
           CustomButton(
             text: 'Log In',
-            callback: (){
+            callback: () async{
+              final provider= Provider.of<GoogleSingInProvider>(context, listen: false);
+              await provider.googleLogout();
               Navigator.of(context).pushNamed(Login.id);
 
             },
@@ -80,17 +104,28 @@ class MyHomePage extends StatelessWidget {
           ),
           CustomButton(
             text: 'Register',
-            callback: () {
+            callback: () async{
+              final provider= Provider.of<GoogleSingInProvider>(context, listen: false);
+              await provider.googleLogout();
               Navigator.of(context).pushNamed(Registration.id);
             },
           ),
-        ],
+          SizedBox(
+            height: 10,
+          ),
+          SignInButton(buttonType: ButtonType.google, onPressed: () async{
+            final provider= Provider.of<GoogleSingInProvider>(context, listen: false);
+              await provider.googleLogin();
+               Navigator.of(context).pushNamed(HomeGoogle.id);
+                      }
+            ),
+            ],
       ),
-
     );
   }
-
 }
+
+
 
 class CustomButton extends StatelessWidget {
   final VoidCallback callback;
@@ -100,7 +135,7 @@ class CustomButton extends StatelessWidget {
   const CustomButton({Key? key,required this.callback,required this.text}):super(key: key);
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
     return Container(
         padding: const EdgeInsets.all(8),
          child: Material(

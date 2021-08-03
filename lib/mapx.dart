@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:provider/provider.dart';
 import 'backlocation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,16 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoder/geocoder.dart' as geoCo;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'googleSign.dart';
+import 'main.dart';
 
 
 class MapLocation extends StatefulWidget {
 
   static const String id = "MAPLOCATION";
-  final UserCredential user;
-  const MapLocation({ Key? key,  required this.user}):super(key: key);
-   //const Locationp({Key? key}) : super(key: key);
-
-
+  final UserCredential? user;
+  final OAuthCredential? ouser;
+  const MapLocation({ Key? key, this.user,this.ouser}):super(key: key);
 
   @override
   _MapLocationState createState() => _MapLocationState();
@@ -33,6 +34,7 @@ class _MapLocationState extends State<MapLocation> {
   Position? position;
   String? addressLocation;
   String? country;
+
 
   void getMarkers(double lat,double long){
     MarkerId markerId = MarkerId(lat.toString()+ long.toString());
@@ -61,12 +63,10 @@ class _MapLocationState extends State<MapLocation> {
     addressLocation = 'null';
     country= 'null';
     getCurrentLocation();
+
       }
 
-  /*static final CameraPosition _kGooglePlex = CameraPosition(
-    target: LatLng(26.292506,50.216519),
-    zoom: 14.4746,
-  );*/
+
   late Position currentPosition;
   var geolocator = Geolocator();
   double bottomPaddingofMap = 0;
@@ -89,14 +89,31 @@ class _MapLocationState extends State<MapLocation> {
 
   @override
   Widget build(BuildContext context) {
-
+    final provider= Provider.of<GoogleSingInProvider>(context);
     return
       Stack(
       children: [
+
         Scaffold(
+
           appBar: AppBar(
             title: Text('Tap to save Location'),
-          ),
+            actions: [
+              IconButton(onPressed: () async{
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context)=> MyHomePage(),
+                    )
+                );
+              },
+                  icon: Icon(Icons.logout),
+              ),
+              if(provider.googleSignIn.currentUser!= null)
+              CircleAvatar(backgroundImage: NetworkImage(provider.googleSignIn.currentUser!.photoUrl.toString()),)
+            ],
+             ),
+
+
           body:
           Container(
             child: Column(
@@ -106,12 +123,13 @@ class _MapLocationState extends State<MapLocation> {
                   child: GoogleMap(
                     padding: EdgeInsets.only(bottom: bottomPaddingofMap),
                     onTap: (tapped) async {
+                      final String uid= FirebaseAuth.instance.currentUser!.uid.toString();
                       final coordinated = new geoCo.Coordinates(tapped.latitude, tapped.longitude);
                       var address = await geoCo.Geocoder.local.findAddressesFromCoordinates(coordinated);
                       var firstAddress = address.first;
                       getMarkers(tapped.latitude, tapped.longitude);
                       await FirebaseFirestore.instance.collection('location').add({
-                        'from': widget.user.credential,
+                        'from': uid.toString(),
                         'latitude' : tapped.latitude,
                         'longitude': tapped.longitude,
                         'Address' : firstAddress.addressLine,

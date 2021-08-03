@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "909705467663-ppqq65o4dif0niqn1bnppi29f7fdg6cq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "faisalawi.my_location",
+            "certificate_hash": "a35aeaf80c00f8f0f2e6510e5a6181f045fa8e18"
+          }
+        },
+        {
           "client_id": "909705467663-79taqrlkoln6g46rm1278gejjk74atsn.apps.googleusercontent.com",
           "client_type": 3
         }

@@ -44,9 +44,10 @@ dependencies:
   #firebase_auth: ^0.18.0
   #location: ^3.0.2
   #page_transition: ^1.1.6
-  google_sign_in: ^5.0.4
+  google_sign_in: ^5.0.5
   sign_button: ^2.0.0
   provider: ^5.0.0
+  font_awesome_flutter: ^9.1.0
   #flutter_facebook_login: ^3.0.0
   #firebase_database: ^4.0.0
 
